@@ -142,7 +142,7 @@ if __name__ == "__main__":
     fileNameInput = arguments[2]
 
     # wSuDcPn_U0376euJz2zJmrZoYePPLXCjvM2OMuAJ    -- WHY CAN WE NOT USE THIS?
-    grabber = scraper.CompaniesHouseService(key="uT7AYPcRf-CmKy5l-aCuALhKKn7vnR977Kr3NtQb")
+    grabber = scraper.CompaniesHouseService(key="ySgr9SZdmTk2PFH3rNxkmwJLTYYLbEIM7I--tmq1")
     scrapedData = grabber.get_company_profile(company_num)
     if scrapedData == {}:
         print("-!-!-!-!-!-!-!-!-NO DATA WAS RETURNED-!-!-!-!-!-!-!-!-!")
