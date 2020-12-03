@@ -14,31 +14,42 @@ def populate(fileName):
     date = datetime.today().strftime('%Y-%m-%d')
     pairs["[DATE]"] = date
 
-    # Get corerspondence addresss
-    corr_address = ""
-    for line in personData["address"]:
-        corr_address += personData["address"][line] + ", "
-    corr_address = corr_address[:-2]
+    guarantor2 = True
+    if pairs["[Guarantor2]"] == "nan" or pairs["[GuarantorAddress2]"] == "nan":
+        guarantor2 = False
 
-    pairs["[GuarantorsAddress]"] = corr_address
 
-    # get correctly ordered guarantor name
-    oldName = personData["name"]
-    split = oldName.split(",")
-    name = split[1] + " " + split[0]
-    pairs["[Guarantors]"] = name
+
+    if pairs["[GuarantorsAddress]"] == "nan":
+        # Get corerspondence addresss
+        corr_address = ""
+        for line in personData["address"]:
+            corr_address += personData["address"][line] + ", "
+        corr_address = corr_address[:-2]
+
+        pairs["[GuarantorsAddress]"] = corr_address
+
+    if pairs["[Guarantors]"] == "nan":
+        # get correctly ordered guarantor name
+        oldName = personData["name"]
+        split = oldName.split(",")
+        name = split[1] + " " + split[0]
+        pairs["[Guarantors]"] = name
 
     # get company name
-    companyName = scrapedData["company_name"]
-    pairs["[CompanyName]"] = companyName
+    if pairs["[CompanyName]"] == "nan":
+        pairs["[CompanyName]"] = scrapedData["company_name"]
+    
+    companyName = pairs["[CompanyName]"]
 
-    # Get property address and title
-    address = ""
-    for line in scrapedData["registered_office_address"]:
-        address += scrapedData["registered_office_address"][line] + ", "
-    address = address[:-2]
 
-    pairs["[PropertyAddressAndTitle]"] = address
+    if pairs["[PropertyAddressAndTitle]"] == "nan":
+        # Get property address and title
+        address = ""
+        for line in scrapedData["registered_office_address"]:
+            address += scrapedData["registered_office_address"][line] + ", "
+        address = address[:-2]
+        pairs["[PropertyAddressAndTitle]"] = address
 
 
 
@@ -73,13 +84,18 @@ def populate(fileName):
             text = inline[i].text
             extraText = "[" + text + "]"
 
-            # if i == 1:
-            #     print(inline[i].text)
 
+            if (text == "[Guarantor2]" or extraText == "[Guarantor2Address]") and guarantor2 == False:
+                inline[i].text = ""
+                inline[i-1].text = ""
+                inline[i+1].text = ""
+                continue
+                
             if text in pairs.keys():
                 text=text.replace(text,pairs[text])
-                print("REPLACED with: " + text)
+                print("REPLACED with: " + text) 
                 inline[i].text = text
+
 
             if extraText in pairs.keys():
                 try:
@@ -102,6 +118,11 @@ def populate(fileName):
     else:
         outputdir += ' Edited' + ".docx"
     document.save(outputdir)
+    print("--------------------------------------------------------------------------------------")
+
+
+
+
 
 if __name__ == "__main__":
     arguments = sys.argv
@@ -114,7 +135,7 @@ if __name__ == "__main__":
     if len(arguments) == 4:
         preferDate = str(arguments[3])
         if preferDate == 'date':
-            dateOn = True
+            dateOn = True   
 
     
     company_num = str(arguments[1])
@@ -123,8 +144,10 @@ if __name__ == "__main__":
     # wSuDcPn_U0376euJz2zJmrZoYePPLXCjvM2OMuAJ    -- WHY CAN WE NOT USE THIS?
     grabber = scraper.CompaniesHouseService(key="uT7AYPcRf-CmKy5l-aCuALhKKn7vnR977Kr3NtQb")
     scrapedData = grabber.get_company_profile(company_num)
-
-    print("\n\n\n\n")
+    if scrapedData == {}:
+        print("-!-!-!-!-!-!-!-!-NO DATA WAS RETURNED-!-!-!-!-!-!-!-!-!")
+    
+    print("\n\n")
     print("----------------DETAILS OF COMPANY-------------------------------------")
     for data in scrapedData:
         print(str(data) + " : " + str(scrapedData[data]))

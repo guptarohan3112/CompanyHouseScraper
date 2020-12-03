@@ -82,9 +82,25 @@ class CompaniesHouseService:
                 if directorName == sigPersonName.upper():
                     nameMatch = True 
             
+            msg = ""
             if not nameMatch:
-                print("\n\n\n\n*********THERE IS NO MATCH BETWEEN DIRECTORS AND PEOPLE WITH SIGNIFICANT CONTROL!*********\n\n\n\n")
-                fileopen("")
+                msg = "*********THERE IS NO MATCH BETWEEN DIRECTORS AND PEOPLE WITH SIGNIFICANT CONTROL!************" 
+                print("---------------------------------------------------------------------------------------------")
+                print("---------------------------------------------------------------------------------------------")
+                print("---------------------------------------------------------------------------------------------")
+                print(msg)
+                print("---------------------------------------------------------------------------------------------")
+                print("---------------------------------------------------------------------------------------------")
+                print("---------------------------------------------------------------------------------------------")
+            else:
+                msg = "THERE IS A MATCH BETWEEN DIRECTORS AND PEOPLE WITH SIGNIFICANT CONTROL"
+
+            f = open("matched_guarantors.txt", "w")
+            f.write(msg)
+            f.close()
+
+                
+
                 
 
 
